@@ -1,4 +1,5 @@
 from token import *
+numsContainer = ['0','1','2','3','4','5','6','7','8','9']
 class lexer:
     def __init__(self , src):
         self.tokens = []
@@ -107,25 +108,67 @@ class lexer:
                     self.add_token(TOK_LTLT)
                 else:
                     self.add_token(TOK_LT)
-
-
-            # todo : (check numarical) and do logic for ints and floats
+            
+            # todo (ints and float parser)
+            self.NumberTokenizer(char=char)
+            self.stringParser(char=char , sign='"')
+            self.stringParser(char=char , sign="'")
             # todo : check if it starts with "" or '' and get the string token
             # todo : apha chars (a letter) or identifier
 
         return self.tokens
     
+
+    def NumberTokenizer(self,char):
+        if char in numsContainer:
+            while self.look() in numsContainer:
+                self.advance();
+                if self.look() == '.' and self.look_forward() in numsContainer:
+                    self.advance()
+                    while self.look() in numsContainer:
+                        self.advance();
+                    self.add_token(TOK_FLOAT)
+                else:
+                    self.add_token(TOK_INTEGER)
+
+    def stringParser(self , char , sign):
+        if char==sign:
+            self.start = self.curr
+            while self.look() != sign and not self.curr >= len(self.src):
+               self.advance();
+            
+
+            # if we reached the end of the src file scaning for the end of the string without finding the closing '/"
+            if self.curr >= len(self.src):
+                raise SystemError("reached the end of the file scaning for a closing sign for a string")
+            
+
+            self.add_token(TOK_STRING)
+            self.advance();
+        
+            
+
     def advance(self):
+        if self.curr >= len(self.src):
+            return False
+        
+        
         char = self.src[self.curr]
         self.curr = self.curr + 1
         return char
     
 
     def look(self):
+        if self.curr >= len(self.src):
+            return False
+        
         return self.src[self.curr]
     
     
     def look_forward(self , n=1):
+        if self.curr + 1 >= len(self.src):
+            return False
+        
         if self.curr >= len(self.src):
             return '\0'
         return self.src[self.curr + n]
