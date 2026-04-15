@@ -1,5 +1,23 @@
 from token import *
 numsContainer = ['0','1','2','3','4','5','6','7','8','9']
+KEYWORDS = [
+    "if",
+    "then",
+    "else",
+    "true",
+    "false",
+    "and",
+    "or",
+    "while",
+    "do",
+    "for",
+    "func",
+    "null",
+    "end",
+    "print",
+    "println",
+    "return"
+]
 class lexer:
     def __init__(self , src):
         self.tokens = []
@@ -113,6 +131,7 @@ class lexer:
             self.NumberTokenizer(char=char)
             self.stringParser(char=char , sign='"')
             self.stringParser(char=char , sign="'")
+            self.IdParser(char=char)
             # todo : check if it starts with "" or '' and get the string token
             # todo : apha chars (a letter) or identifier
 
@@ -130,7 +149,48 @@ class lexer:
                     self.add_token(TOK_FLOAT)
                 else:
                     self.add_token(TOK_INTEGER)
-
+    def IdParser(self , char):
+        if char.isalpha() or char=='_':
+            while self.curr < len(self.src) and ( self.look().isalnum() or self.look() == '_' ):
+                self.advance()
+            subString = self.src[self.start:self.curr]
+            if subString in KEYWORDS:
+                print("working")
+                if subString == "if":
+                    self.add_token(TOK_IF)
+                elif subString == "then":
+                    self.add_token(TOK_THEN)
+                elif subString == "else":
+                    self.add_token(TOK_ELSE)
+                elif subString == "true":
+                    self.add_token(TOK_TRUE)
+                elif subString == "false":
+                    self.add_token(TOK_FALSE)
+                elif subString == "and":
+                    self.add_token(TOK_AND)
+                elif subString == "or":
+                    self.add_token(TOK_OR)
+                elif subString == "while":
+                    self.add_token(TOK_WHILE)
+                elif subString == "do":
+                    self.add_token(TOK_DO)
+                elif subString == "for":
+                    self.add_token(TOK_FOR)
+                elif subString == "func":
+                    self.add_token(TOK_FUNC)
+                elif subString == "null":
+                    self.add_token(TOK_NULL)
+                elif subString == "end":
+                    self.add_token(TOK_END)
+                elif subString == "print":
+                    self.add_token(TOK_PRINT)
+                elif subString == "println":
+                    self.add_token(TOK_PRINTLN)
+                elif subString == "return":
+                    self.add_token(TOK_RET)
+            else:
+                self.add_token(TOK_IDENTIFIER)
+    
     def stringParser(self , char , sign):
         if char==sign:
             self.start = self.curr
@@ -145,8 +205,7 @@ class lexer:
 
             self.add_token(TOK_STRING)
             self.advance();
-        
-            
+      
 
     def advance(self):
         if self.curr >= len(self.src):
