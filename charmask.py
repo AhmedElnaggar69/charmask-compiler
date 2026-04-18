@@ -1,6 +1,7 @@
 import sys
 from token import *
 from lexer import *
+from parser import *
 if __name__ == '__main__':
     if len(sys.argv) != 2 :
         raise SystemExit('you have to use python3 charmask.py <filename>')
@@ -11,7 +12,11 @@ if __name__ == '__main__':
         src = file.read()
 
         # todo (tokenize the src)
+        print("TOKENS : ")
         tokens = lexer(src).tokenize()
         for tok in tokens:
             print(tok)
-    
+
+        print("AST : ")
+        ast = Parser(tokens).parse()
+        print(ast)

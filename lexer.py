@@ -142,16 +142,23 @@ class lexer:
     
 
     def NumberTokenizer(self,char):
+        
         if char in numsContainer:
-            while self.look() in numsContainer:
-                self.advance();
-                if self.look() == '.' and self.look_forward() in numsContainer:
+            IsFloat = False
+            while(self.look() in numsContainer):
+                self.advance()
+            if self.look() == '.' and self.look_forward() in numsContainer:
+                IsFloat = True
+                self.advance()
+                while self.look() in numsContainer:
                     self.advance()
-                    while self.look() in numsContainer:
-                        self.advance();
-                    self.add_token(TOK_FLOAT)
-                else:
-                    self.add_token(TOK_INTEGER)
+            if IsFloat:
+                self.add_token(TOK_FLOAT)
+            else:
+                self.add_token(TOK_INTEGER)
+
+
+        
     def IdParser(self , char):
         if char.isalpha() or char=='_':
             while self.curr < len(self.src) and ( self.look().isalnum() or self.look() == '_' ):
