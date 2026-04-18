@@ -9,7 +9,6 @@ if __name__ == '__main__':
 
     with open(filename) as file:
         src = file.read()
-        print(src)
 
         # todo (tokenize the src)
         tokens = lexer(src).tokenize()

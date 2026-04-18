@@ -23,6 +23,8 @@ TOK_NOT         = 'TOK_NOT'         # !
 TOK_GT          = 'TOK_GT'          # >
 TOK_LT          = 'TOK_LT'          # <
 TOK_ASSIGN      = 'TOK_ASSIGN'      # =
+TOK_SCOMMENT      = 'TOK_SCOMMENT'      # $
+
 
 # Two-char tokens
 TOK_GE          = 'TOK_GE'          # >=
@@ -31,6 +33,7 @@ TOK_NE          = 'TOK_NE'          # !=
 TOK_EQ          = 'TOK_EQ'          # ==
 TOK_GTGT        = 'TOK_GTGT'        # >>
 TOK_LTLT        = 'TOK_LTLT'        # <<
+TOK_MCOMMENT      = 'TOK_MCOMMENT'      # $$
 
 # Literals
 TOK_IDENTIFIER  = 'TOK_IDENTIFIER'

@@ -1,23 +1,23 @@
 from token import *
 numsContainer = ['0','1','2','3','4','5','6','7','8','9']
-KEYWORDS = [
-    "if",
-    "then",
-    "else",
-    "true",
-    "false",
-    "and",
-    "or",
-    "while",
-    "do",
-    "for",
-    "func",
-    "null",
-    "end",
-    "print",
-    "println",
-    "return"
-]
+KEYWORDS = {
+    "if": TOK_IF,
+    "then": TOK_THEN,
+    "else": TOK_ELSE,
+    "true": TOK_TRUE,
+    "false": TOK_FALSE,
+    "and": TOK_AND,
+    "or": TOK_OR,
+    "while": TOK_WHILE,
+    "do": TOK_DO,
+    "for": TOK_FOR,
+    "func": TOK_FUNC,
+    "null": TOK_NULL,
+    "end": TOK_END,
+    "print": TOK_PRINT,
+    "println": TOK_PRINTLN,
+    "return": TOK_RET
+}
 class lexer:
     def __init__(self , src):
         self.tokens = []
@@ -41,10 +41,7 @@ class lexer:
             elif char == '\r':
                 pass
             elif char == ' ':
-                pass
-            elif char == '$':
-                while self.look() != '\n' and not self.curr >= len(self.src):
-                    self.advance()
+                pass         
             elif char == '+':
                 self.add_token(TOK_PLUS)
 
@@ -127,11 +124,17 @@ class lexer:
                 else:
                     self.add_token(TOK_LT)
             
+
+        
+            elif char == '$' and self.look_forward()=="$":
+                print(char + ' ' + self.look_forward())
+            
             # todo (ints and float parser)
             self.NumberTokenizer(char=char)
             self.stringParser(char=char , sign='"')
             self.stringParser(char=char , sign="'")
             self.IdParser(char=char)
+            self.commentsParser(char=char)
             # todo : check if it starts with "" or '' and get the string token
             # todo : apha chars (a letter) or identifier
 
@@ -154,40 +157,9 @@ class lexer:
             while self.curr < len(self.src) and ( self.look().isalnum() or self.look() == '_' ):
                 self.advance()
             subString = self.src[self.start:self.curr]
+            keyType = KEYWORDS.get(subString)
             if subString in KEYWORDS:
-                print("working")
-                if subString == "if":
-                    self.add_token(TOK_IF)
-                elif subString == "then":
-                    self.add_token(TOK_THEN)
-                elif subString == "else":
-                    self.add_token(TOK_ELSE)
-                elif subString == "true":
-                    self.add_token(TOK_TRUE)
-                elif subString == "false":
-                    self.add_token(TOK_FALSE)
-                elif subString == "and":
-                    self.add_token(TOK_AND)
-                elif subString == "or":
-                    self.add_token(TOK_OR)
-                elif subString == "while":
-                    self.add_token(TOK_WHILE)
-                elif subString == "do":
-                    self.add_token(TOK_DO)
-                elif subString == "for":
-                    self.add_token(TOK_FOR)
-                elif subString == "func":
-                    self.add_token(TOK_FUNC)
-                elif subString == "null":
-                    self.add_token(TOK_NULL)
-                elif subString == "end":
-                    self.add_token(TOK_END)
-                elif subString == "print":
-                    self.add_token(TOK_PRINT)
-                elif subString == "println":
-                    self.add_token(TOK_PRINTLN)
-                elif subString == "return":
-                    self.add_token(TOK_RET)
+                self.add_token(keyType)
             else:
                 self.add_token(TOK_IDENTIFIER)
     
@@ -205,7 +177,25 @@ class lexer:
 
             self.add_token(TOK_STRING)
             self.advance();
-      
+    
+    def commentsParser(self , char):
+        if char == '$':
+            if self.match('$'):  
+                self.start = self.curr 
+                while(self.curr < len(self.src)):
+                    if self.look() =='$' and self.look_forward() =='$':
+                        break
+                    elif self.look() =='\n':
+                        self.line+=1
+                    self.advance()
+                self.add_token(TOK_MCOMMENT)
+                self.advance()
+                self.advance()
+            else:
+                while self.look() != '\n' and self.curr < len(self.src):
+                    self.advance()
+                self.add_token(TOK_SCOMMENT)
+            
 
     def advance(self):
         if self.curr >= len(self.src):
